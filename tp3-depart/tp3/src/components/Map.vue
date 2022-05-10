@@ -2,35 +2,32 @@
   <div>
     <l-map ref="map" style="height: 400px" :zoom="zoom" :center="center">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <l-feature-group ref="features">
-        <l-polyline
-          v-for="polyline in polylines"
-          :key="polyline.id"
-          :lat-lngs="polyline.latlngs"
-          :color="getColor(polyline.level)"
-        ></l-polyline>
-      </l-feature-group>
+      <l-polyline
+        v-for="polyline in polylines"
+        :key="polyline.id"
+        :lat-lngs="polyline.latlngs"
+        :color="getColor(polyline.level)"
+      ></l-polyline>
     </l-map>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LPolyline, LFeatureGroup } from 'vue2-leaflet'
+import { LMap, LTileLayer, LPolyline } from 'vue2-leaflet'
 import { segmentsService } from '@/services/segmentsService.js'
 
 export default {
   components: {
     LMap,
     LTileLayer,
-    LPolyline,
-    LFeatureGroup
+    LPolyline
   },
   data () {
     return {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: 'TP3 app web',
       zoom: 12,
-      center: [46.81, -71.22],
+      center: [46.81, -71.22], // le centre est qc pour l'instant
       polylines: []
     }
   },
@@ -42,38 +39,33 @@ export default {
   },
   methods: {
     setNewFocus () {
-      var nb = 0
-      var x = 0
-      var y = 0
+      var group = []
       for (let i = 0; i < this.polylines.length; i++) {
         for (let j = 0; j < this.polylines[i].latlngs.length; j++) {
-          nb++
-          x += this.polylines[i].latlngs[j][0]
-          y += this.polylines[i].latlngs[j][1]
+          group.push(this.polylines[i].latlngs[j])
         }
       }
-      this.center = [x / nb, y / nb]
-      // var group = new L.featureGroup([marker1, marker2, marker3])
-      /* console.log(this.$refs.features.mapObject)
-      console.log(this.$refs.features.mapObject.getBounds())
-      this.$refs.map.mapObject.fitBounds(
-        this.$refs.features.mapObject.getBounds()
-      ) */
+      // permet le changement du zoom et du
+      this.$refs.map.mapObject.fitBounds(group)
     },
     async loadPolyline () {
       var newLat = []
       var autoIncrementId = 0
-      await this.trail.segments.forEach(async function (id) {
-        const segments = await segmentsService.getSegmentById(id)
-        autoIncrementId++
-        const polyline = {
-          id: autoIncrementId,
-          latlngs: segments.coordinates,
-          level: segments.level
-        }
-        newLat.push(polyline)
-      })
-      this.polylines = newLat
+      try {
+        await this.trail.segments.forEach(async function (id) {
+          const segments = await segmentsService.getSegmentById(id)
+          autoIncrementId++
+          const polyline = {
+            id: autoIncrementId,
+            latlngs: segments.coordinates,
+            level: segments.level
+          }
+          newLat.push(polyline)
+        })
+        this.polylines = newLat
+      } catch (error) {
+        console.log('error')
+      }
     },
     getColor (color) {
       if (color === 'Facile') {

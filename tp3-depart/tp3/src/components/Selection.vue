@@ -39,7 +39,7 @@
       </b-row>
       <b-row style="margin-top: 15px">
         <b-col>
-          <p>Nb like</p>
+          <p>{{ this.likes.length }}</p>
         </b-col>
         <b-col>
           <p>Parc: {{ this.selectedTrail.park }}</p>
@@ -61,7 +61,8 @@ export default {
       trails: [],
       selectedTrail: null,
       hasError: false,
-      isLiked: false
+      isLiked: false,
+      likes: []
     }
   },
   async created () {
@@ -82,7 +83,7 @@ export default {
     },
     selectedTrail: async function () {
       if (this.selectedTrail !== null) {
-        console.log('change trail')
+        await this.getLike()
         this.$emit('changeSelectedTrail', this.selectedTrail)
       }
     }
@@ -90,7 +91,7 @@ export default {
   methods: {
     async loadTrails () {
       try {
-        const loadedTrails = await trailsService.getTrailsByParkId(
+        const loadedTrails = await parksService.getTrailsByParkId(
           this.selectedPark.id
         )
         this.trails = loadedTrails.sort((a, b) =>
@@ -99,6 +100,15 @@ export default {
       } catch (error) {
         // this.hasError = true
         console.log('error2')
+      }
+    },
+    async getLike () {
+      try {
+        this.likes = await trailsService.getNbLikesByTrailId(
+          this.selectedTrail.id
+        )
+      } catch (error) {
+        console.log('error')
       }
     },
     like () {

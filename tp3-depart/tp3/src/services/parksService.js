@@ -6,6 +6,12 @@ async function getParks () {
   return response.data
 }
 
+async function getTrailsByParkId (id) {
+  const response = await axios.get(`${API}/api/parks/` + id + '/trails')
+  return response.data
+}
+
 export const parksService = {
-  getParks
+  getParks,
+  getTrailsByParkId
 }
