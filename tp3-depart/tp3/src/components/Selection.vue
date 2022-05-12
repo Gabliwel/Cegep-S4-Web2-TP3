@@ -2,7 +2,7 @@
   <div>
     <p v-if="isLoggedIn && onError === false">Connecter en tant que {{ this.name }}</p>
     <select class="custom-select" :disabled="hasServiceError" v-model="selectedPark">
-      <option v-for="park in parks" :value="park" :key="park.id">{{ park.name }}</option>
+      <option v-for="park in this.parks" :value="park" :key="park.id">{{ park.name }}</option>
     </select>
     <select
       class="custom-select"
@@ -54,28 +54,19 @@
 </template>
 
 <script>
-import { parksService } from '@/services/parksService.js'
-import { trailsService } from '@/services/trailsService.js'
-
 export default {
   data () {
     return {
-      parks: [],
       selectedPark: null,
-      trails: [],
       selectedTrail: null,
       hasServiceError: false,
       isLiked: false,
-      likeLoading: false,
-      likes: []
+      likeLoading: false
     }
   },
   async created () {
     try {
-      const loadedParks = await parksService.getParks()
-      this.parks = loadedParks.sort((a, b) =>
-        a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-      )
+      await this.$store.dispatch('map/loadParks')
     } catch (error) {
       this.hasServiceError = true
       this.makeToast('Impossible de charger les parks', 'Erreur Serveur')
@@ -89,13 +80,14 @@ export default {
   },
   watch: {
     selectedPark: async function () {
-      this.selectedTrail = null
       await this.loadTrails()
     },
     selectedTrail: async function () {
       if (this.selectedTrail !== null) {
+        this.likeLoading = true
+        await this.$store.dispatch('map/updateSelectedTrail', this.selectedTrail)
         await this.getLike()
-        this.$emit('changeSelectedTrail', this.selectedTrail)
+        this.likeLoading = false
       }
     }
   },
@@ -108,17 +100,21 @@ export default {
     },
     name () {
       return this.$store.state.profile.name
+    },
+    parks () {
+      return this.$store.state.map.parks
+    },
+    trails () {
+      return this.$store.state.map.trails
+    },
+    likes () {
+      return this.$store.state.map.likes
     }
   },
   methods: {
     async loadTrails () {
       try {
-        const loadedTrails = await parksService.getTrailsByParkId(
-          this.selectedPark.id
-        )
-        this.trails = loadedTrails.sort((a, b) =>
-          a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-        )
+        await this.$store.dispatch('map/loadTrails', this.selectedPark.id)
       } catch (error) {
         this.hasServiceError = true
         this.makeToast('Impossible de charger les sentiers pour le park choisi', 'Erreur Serveur')
@@ -162,11 +158,8 @@ export default {
     },
     async updateLikes () {
       try {
-        this.likes = await trailsService.getNbLikesByTrailId(
-          this.selectedTrail.id
-        )
+        await this.$store.dispatch('map/updateLikes', this.selectedTrail)
       } catch (error) {
-        this.likes = []
         this.isLiked = false
         this.makeToast('Impossible de charger le nombre de like du sentier', 'Erreur Serveur')
       }

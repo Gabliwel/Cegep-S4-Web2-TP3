@@ -1,5 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils'
-import { resetAllWhenMocks } from 'jest-when'
+import { when, resetAllWhenMocks } from 'jest-when'
 import App from '@/App.vue'
 import VueRouter from 'vue-router'
 import routes from '@/router/routes'
@@ -23,6 +23,7 @@ jest.mock('@/views/Register.vue', () => ({
 
 let wrapper
 let router
+let store
 
 beforeEach(() => {
   resetAllWhenMocks()
@@ -30,7 +31,10 @@ beforeEach(() => {
   router = new VueRouter({ routes, mode: 'abstract' })
   wrapper = mount(App, {
     localVue,
-    router
+    router,
+    mocks: {
+      $store: store
+    }
   })
 })
 
@@ -65,8 +69,10 @@ describe('routes.js', () => {
     expect(wrapper.findComponent(PageNotFound).exists()).toBe(true)
   })
 })
-/*
+
 function createMockStore () {
+  const getIsLoggedIn = jest.fn()
+  when(getIsLoggedIn).mockReturnValue(false)
   const store = {
     state: {
       posts: {
@@ -74,14 +80,10 @@ function createMockStore () {
       }
     },
       getters: {
-        'posts/getPostById': getPostByIdMock
-        // Pourrait fonctionner, mais manque de précision. C'est pourquoi on utilise le when ci-dessus.
-        // getPostById: () => {
-        //   return { ...posts[0] }
-        // }
+        'authentication/isLoggedIn': getIsLoggedIn
       },
       dispatch: jest.fn()
     }
     return store
 }
-*/
+

@@ -3,10 +3,10 @@
     <b-container fluid>
       <b-row>
         <b-col style="margin-left: 50px">
-          <Selection @changeSelectedTrail="onChangeSelectedTrail"/>
+          <Selection/>
         </b-col>
         <b-col cols="7" style="margin-right: 50px">
-          <Map v-bind:trail="selectedTrail"/>
+          <Map/>
         </b-col>
       </b-row>
     </b-container>
@@ -22,16 +22,6 @@ export default {
   components: {
     Map,
     Selection
-  },
-  methods: {
-    onChangeSelectedTrail (newTrail) {
-      this.selectedTrail = newTrail
-    }
-  },
-  data () {
-    return {
-      selectedTrail: null
-    }
   }
 }
 </script>

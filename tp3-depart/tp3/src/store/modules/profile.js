@@ -42,7 +42,6 @@ const actions = {
   async likeTrail ({ rootGetters }, trailId) {
     const userId = rootGetters['authentication/getTokenUserId']
     const reponse = await userService.likeTrail(userId, trailId)
-    console.log('2')
     return reponse
   },
   async dislikeTrail ({ rootGetters }, likes) {

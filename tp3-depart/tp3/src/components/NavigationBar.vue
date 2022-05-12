@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse">
       <router-link class="nav-link active" v-bind:to="{ name: 'Home' }">Accueil</router-link>
       <router-link v-if="isLoggedIn === false" class="nav-link active" v-bind:to="{ name: 'Login' }">Connexion</router-link>
-      <b-link v-if="isLoggedIn" class="nav-link active" @click="logout">Déconnexion</b-link>
+      <a v-if="isLoggedIn" class="nav-link active" @click="logout">Déconnexion</a>
     </div>
   </nav>
 </template>

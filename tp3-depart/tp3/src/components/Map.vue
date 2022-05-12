@@ -31,10 +31,9 @@ export default {
       polylines: []
     }
   },
-  props: {
-    trail: {
-      type: Object,
-      default: () => {}
+  computed: {
+    trail () {
+      return this.$store.state.map.selectedTrail
     }
   },
   methods: {
@@ -90,7 +89,9 @@ export default {
   },
   watch: {
     trail: function () {
-      this.loadPolyline()
+      if (this.trail !== null) {
+        this.loadPolyline()
+      }
     },
     polylines: function () {
       // if nécessaire pour la population longue du array
