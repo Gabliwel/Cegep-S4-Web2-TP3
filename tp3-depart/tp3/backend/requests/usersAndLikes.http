@@ -45,7 +45,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAd
 
 ### Ajouter un "j'aime" à un utilisateur 
 POST http://localhost:3000/api/likes
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpYXQiOjE2MTk0NzA0NTIsImV4cCI6MTYxOTQ3NDA1Miwic3ViIjoiOTk5OTkifQ.VzbKkMZSXLvfJBt6VM_yyvjFWaz9VUvIoSUXVOsIWhU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpYXQiOjE2NTIzMTUxNTAsImV4cCI6MTY1MjMxODc1MCwic3ViIjoiOTk5OTkifQ.XyCzhbM7Nhn-JWmDWTs8DHEiQFkiQyidvbG3zRDWfbc
 content-type: application/json
 
 {
@@ -54,5 +54,5 @@ content-type: application/json
 }
 
 ### supprimer un "j'aime" d'un utilisateur 
-DELETE  http://localhost:3000/api/likes/996
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpYXQiOjE2MTk0NzA0NTIsImV4cCI6MTYxOTQ3NDA1Miwic3ViIjoiOTk5OTkifQ.VzbKkMZSXLvfJBt6VM_yyvjFWaz9VUvIoSUXVOsIWhU
+DELETE  http://localhost:3000/api/likes/1023
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpYXQiOjE2NTIzMTUxNTAsImV4cCI6MTY1MjMxODc1MCwic3ViIjoiOTk5OTkifQ.XyCzhbM7Nhn-JWmDWTs8DHEiQFkiQyidvbG3zRDWfbc

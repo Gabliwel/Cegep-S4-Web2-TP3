@@ -28,6 +28,33 @@ const actions = {
     } catch (error) {
       commit('setOnError')
     }
+  },
+  async hasLiked ({ rootGetters }, likes) {
+    const userId = rootGetters['authentication/getTokenUserId']
+    const isFound = await likes.some(like => {
+      if (like.userId === userId) {
+        return true
+      }
+      return false
+    })
+    return isFound
+  },
+  async likeTrail ({ rootGetters }, trailId) {
+    const userId = rootGetters['authentication/getTokenUserId']
+    const reponse = await userService.likeTrail(userId, trailId)
+    console.log('2')
+    return reponse
+  },
+  async dislikeTrail ({ rootGetters }, likes) {
+    const userId = rootGetters['authentication/getTokenUserId']
+    const like = await likes.find(like => {
+      if (like.userId === userId) {
+        return true
+      }
+      return false
+    })
+    const reponse = await userService.dislikeTrail(like.id)
+    return reponse
   }
 }
 

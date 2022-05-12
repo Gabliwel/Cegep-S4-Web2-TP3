@@ -1,32 +1,36 @@
 <template>
   <div>
-    <select class="custom-select" :disabled="hasError" v-model="selectedPark">
-      <option v-for="park in parks" :value="park" :key="park.id">{{
-        park.name
-      }}</option>
+    <p v-if="isLoggedIn && onError === false">Connecter en tant que {{ this.name }}</p>
+    <select class="custom-select" :disabled="hasServiceError" v-model="selectedPark">
+      <option v-for="park in parks" :value="park" :key="park.id">{{ park.name }}</option>
     </select>
     <select
       class="custom-select"
-      :disabled="hasError || selectedPark === null"
+      :disabled="hasServiceError || selectedPark === null"
       v-model="selectedTrail"
       style="margin-top: 15px"
     >
-      <option v-for="trail in trails" :value="trail" :key="trail.id">{{
-        trail.name
-      }}</option>
+      <option v-for="trail in trails" :value="trail" :key="trail.id">{{ trail.name }}</option>
     </select>
     <b-container fluid v-if="selectedTrail !== null">
       <b-row style="margin-top: 15px">
         <b-col>
           <img
-            v-if="isLiked === true"
+            v-if="likeLoading"
+            src="@/assets/loadingWaiting.gif"
+            alt="liked"
+            style="height: 50px"
+            @click="unlike()"
+          />
+          <img
+            v-if="isLiked === true && likeLoading === false"
             src="@/assets/liked.png"
             alt="liked"
             style="height: 50px"
             @click="unlike()"
           />
           <img
-            v-if="isLiked === false"
+            v-if="isLiked === false && likeLoading === false"
             src="@/assets/notLiked.png"
             alt="notLiked"
             style="height: 50px"
@@ -60,8 +64,9 @@ export default {
       selectedPark: null,
       trails: [],
       selectedTrail: null,
-      hasError: false,
+      hasServiceError: false,
       isLiked: false,
+      likeLoading: false,
       likes: []
     }
   },
@@ -72,8 +77,14 @@ export default {
         a.name > b.name ? 1 : b.name > a.name ? -1 : 0
       )
     } catch (error) {
-      this.hasError = true
-      console.log('error1')
+      this.hasServiceError = true
+      this.makeToast('Impossible de charger les parks', 'Erreur Serveur')
+    }
+    if (this.isLoggedIn) {
+      await this.$store.dispatch('profile/getProfile')
+      if (this.onError) {
+        this.makeToast('Erreur du chargement du profile', 'Erreur Serveur')
+      }
     }
   },
   watch: {
@@ -88,6 +99,17 @@ export default {
       }
     }
   },
+  computed: {
+    isLoggedIn () {
+      return this.$store.getters['authentication/isLoggedIn']
+    },
+    onError () {
+      return this.$store.state.profile.onError
+    },
+    name () {
+      return this.$store.state.profile.name
+    }
+  },
   methods: {
     async loadTrails () {
       try {
@@ -98,24 +120,63 @@ export default {
           a.name > b.name ? 1 : b.name > a.name ? -1 : 0
         )
       } catch (error) {
-        // this.hasError = true
-        console.log('error2')
+        this.hasServiceError = true
+        this.makeToast('Impossible de charger les sentiers pour le park choisi', 'Erreur Serveur')
       }
     },
     async getLike () {
+      await this.updateLikes()
+      if (this.isLoggedIn && !this.onError) {
+        this.isLiked = await this.$store.dispatch('profile/hasLiked', this.likes)
+      }
+    },
+    async like () {
+      this.likeLoading = true
+      if (this.isLoggedIn) {
+        try {
+          await this.$store.dispatch('profile/likeTrail', this.selectedTrail.id)
+          this.isLiked = true
+        } catch (e) {
+          this.makeToast('Impossible de like pour le moment', 'Erreur Serveur')
+        }
+        this.updateLikes()
+      } else {
+        this.makeToast('Veuillez vous connecter faire cette action', 'Action Impossible')
+      }
+      this.likeLoading = false
+    },
+    async unlike () {
+      this.likeLoading = true
+      if (this.isLoggedIn) {
+        try {
+          await this.$store.dispatch('profile/dislikeTrail', this.likes)
+          this.isLiked = false
+        } catch (e) {
+          this.makeToast('Impossible de retirer le like pour le moment', 'Erreur Serveur')
+        }
+        await this.updateLikes()
+      } else {
+        this.makeToast('Veuillez vous connecter faire cette action', 'Action Impossible')
+      }
+      this.likeLoading = false
+    },
+    async updateLikes () {
       try {
         this.likes = await trailsService.getNbLikesByTrailId(
           this.selectedTrail.id
         )
       } catch (error) {
-        console.log('error')
+        this.likes = []
+        this.isLiked = false
+        this.makeToast('Impossible de charger le nombre de like du sentier', 'Erreur Serveur')
       }
     },
-    like () {
-      this.isLiked = true
-    },
-    unlike () {
-      this.isLiked = false
+    makeToast (msg, title) {
+      this.$bvToast.toast(msg, {
+        title: title,
+        autoHideDelay: 5000,
+        appendToast: true
+      })
     }
   }
 }

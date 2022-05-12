@@ -43,6 +43,14 @@ const actions = {
   },
   logout ({ commit }) {
     commit('logout')
+  },
+  async register ({ commit }, credential) {
+    try {
+      await authService.postUser(credential)
+      commit('setAuthServiceError', '')
+    } catch (error) {
+      commit('setAuthServiceError', error.message)
+    }
   }
 }
 

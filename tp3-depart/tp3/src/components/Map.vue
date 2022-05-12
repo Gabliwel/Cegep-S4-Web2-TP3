@@ -45,7 +45,7 @@ export default {
           group.push(this.polylines[i].latlngs[j])
         }
       }
-      // permet le changement du zoom et du
+      // permet le changement du zoom et de la position
       this.$refs.map.mapObject.fitBounds(group)
     },
     async loadPolyline () {
@@ -64,7 +64,7 @@ export default {
         })
         this.polylines = newLat
       } catch (error) {
-        console.log('error')
+        this.makeToast('Impossible de charger le sentier choisi', 'Erreur Serveur')
       }
     },
     getColor (color) {
@@ -79,6 +79,13 @@ export default {
       } else {
         return 'black'
       }
+    },
+    makeToast (msg, title) {
+      this.$bvToast.toast(msg, {
+        title: title,
+        autoHideDelay: 5000,
+        appendToast: true
+      })
     }
   },
   watch: {

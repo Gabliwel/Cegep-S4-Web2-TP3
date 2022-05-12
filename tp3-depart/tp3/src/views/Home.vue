@@ -1,6 +1,5 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+  <div class="home" style="margin-top: 50px">
     <b-container fluid>
       <b-row>
         <b-col style="margin-left: 50px">

@@ -15,6 +15,20 @@ async function getToken (credential) {
   }
 }
 
+async function postUser (user) {
+  try {
+    const response = await axios.post(`${API}/register`, {
+      email: user.email,
+      password: user.password,
+      name: user.name
+    })
+    return response.data
+  } catch (error) {
+    throw parseAxiosErrorToAppError(error)
+  }
+}
+
 export const authService = {
-  getToken
+  getToken,
+  postUser
 }
