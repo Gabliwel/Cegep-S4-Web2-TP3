@@ -8,13 +8,16 @@ export const ui = {
   IMPOSSIBLE_ACTION_ERROR_TITLE: 'Action Impossible',
   NEEDED_CONNECTION_ACTION: 'Veuillez vous connecter faire cette action',
   Selection: {
-    IMPOSSIBlE_ACTION (action) {
+    IMPOSSIBLE_ACTION (action) {
       return 'Impossible de ' + action + ' pour le moment...'
     },
     IMPOSSIBlE_LOADING (subject) {
       return 'Impossible de charger ' + subject
     },
     CANT_LOAD_USER: 'Erreur du chargement du profile'
+  },
+  Map: {
+    CANT_LOAD_TRAIL: 'Impossible de charger le sentier choisi'
   }
 }
 

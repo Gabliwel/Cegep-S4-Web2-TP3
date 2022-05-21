@@ -43,17 +43,10 @@ const actions = {
     )
     commit('setTrails', sortedTrails)
   },
-  async updateSelectedTrail ({ commit }, selectedTrail) {
+  async updateSelectedTrail ({ commit, dispatch }, selectedTrail) {
     commit('setSelectedTrail', selectedTrail)
     if (selectedTrail != null) {
-      try {
-        const likes = await trailsService.getNbLikesByTrailId(
-          selectedTrail.id
-        )
-        commit('setLikes', likes)
-      } catch (error) {
-        commit('setLikes', [])
-      }
+      dispatch('updateLikes', selectedTrail)
     }
   },
   async updateLikes ({ commit }, selectedTrail) {
@@ -63,7 +56,7 @@ const actions = {
       )
       commit('setLikes', loadedLikes)
     } catch (error) {
-      this.likes = []
+      commit('setLikes', [])
       throw new Error('Impossible de load le nombre de like')
     }
   }

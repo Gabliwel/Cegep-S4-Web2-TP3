@@ -15,6 +15,7 @@
 <script>
 import { LMap, LTileLayer, LPolyline } from 'vue2-leaflet'
 import { segmentsService } from '@/services/segmentsService.js'
+import { ui } from '../externalization/uiTextPlugin.js'
 
 export default {
   components: {
@@ -50,8 +51,9 @@ export default {
     async loadPolyline () {
       var newLat = []
       var autoIncrementId = 0
-      try {
-        await this.trail.segments.forEach(async function (id) {
+      let hasError = false
+      await this.trail.segments.forEach(async function (id) {
+        try {
           const segments = await segmentsService.getSegmentById(id)
           autoIncrementId++
           const polyline = {
@@ -60,10 +62,14 @@ export default {
             level: segments.level
           }
           newLat.push(polyline)
-        })
+        } catch (error) {
+          hasError = true
+        }
+      })
+      if (hasError) {
+        this.makeToast(ui.Map.CANT_LOAD_TRAIL, ui.SERVER_ERROR_TITLE)
+      } else {
         this.polylines = newLat
-      } catch (error) {
-        this.makeToast('Impossible de charger le sentier choisi', 'Erreur Serveur')
       }
     },
     getColor (color) {

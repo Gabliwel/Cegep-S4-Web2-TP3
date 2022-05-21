@@ -1,10 +1,11 @@
 <template>
   <div>
-    <p v-if="isLoggedIn && onError === false">Connecter en tant que {{ this.name }}</p>
-    <select class="custom-select" :disabled="hasServiceError" v-model="selectedPark">
+    <p id="userName" v-if="isLoggedIn && onError === false">Connecter en tant que {{ this.name }}</p>
+    <select id="parksSelect" class="custom-select" :disabled="hasServiceError" v-model="selectedPark">
       <option v-for="park in this.parks" :value="park" :key="park.id">{{ park.name }}</option>
     </select>
     <select
+      id="trailsSelect"
       class="custom-select"
       :disabled="hasServiceError || selectedPark === null"
       v-model="selectedTrail"
@@ -12,17 +13,16 @@
     >
       <option v-for="trail in trails" :value="trail" :key="trail.id">{{ trail.name }}</option>
     </select>
-    <b-container fluid v-if="selectedTrail !== null">
+    <b-container id="trailInfo" fluid v-if="selectedTrail !== null">
       <b-row style="margin-top: 15px">
         <b-col>
           <img
             v-if="likeLoading"
             src="@/assets/loadingWaiting.gif"
-            alt="liked"
             style="height: 50px"
-            @click="unlike()"
           />
           <img
+            id="liked"
             v-if="isLiked === true && likeLoading === false"
             src="@/assets/liked.png"
             alt="liked"
@@ -30,6 +30,7 @@
             @click="unlike()"
           />
           <img
+            id="disliked"
             v-if="isLiked === false && likeLoading === false"
             src="@/assets/notLiked.png"
             alt="notLiked"
@@ -38,15 +39,15 @@
           />
         </b-col>
         <b-col>
-          <p>{{ this.selectedTrail.name }}</p>
+          <p id="trailName">{{ this.selectedTrail.name }}</p>
         </b-col>
       </b-row>
       <b-row style="margin-top: 15px">
         <b-col>
-          <p>{{ this.likes.length }}</p>
+          <p id="nbLikes">{{ this.likes.length }}</p>
         </b-col>
         <b-col>
-          <p>Parc: {{ this.selectedTrail.park }}</p>
+          <p id="parkName">Parc: {{ this.selectedTrail.park }}</p>
         </b-col>
       </b-row>
     </b-container>
